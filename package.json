@@ -1,72 +1,76 @@
 {
-  "name": "crypto-price-predictor-back-end",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon --exec babel-node src/index.js",
-    "build": "babel src --out-dir dist --copy-files",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tylim88/Crypto-Price-Predictor-Back-End.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tylim88/Crypto-Price-Predictor-Back-End/issues"
-  },
-  "homepage": "https://github.com/tylim88/Crypto-Price-Predictor-Back-End#readme",
-  "dependencies": {
-    "express": "^4.16.4"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.4.3",
-    "@babel/core": "^7.4.3",
-    "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.4.3",
-    "env-cmd": "^8.0.2",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.1.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "husky": "^1.3.1",
-    "nodemon": "^1.18.10",
-    "prettier": "^1.16.4",
-    "pretty-quick": "^1.10.0"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ]
-  },
-  "prettier": {
-    "prettier.eslintIntegration": true,
-    "prettier.singleQuote": true,
-    "prettier.jsxSingleQuote": true,
-    "prettier.trailingComma": "es5",
-    "prettier.semi": false,
-    "prettier.jsxBracketSameLine": true,
-    "prettier.useTabs": true
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "eslintConfig": {
-    "parser": "babel-eslint",
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "module"
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:prettier/recommended"
-    ]
-  }
+	"name": "crypto-price-predictor-back-end",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon --exec babel-node src/index.js",
+		"build": "babel src --out-dir dist --copy-files",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tylim88/Crypto-Price-Predictor-Back-End.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/tylim88/Crypto-Price-Predictor-Back-End/issues"
+	},
+	"homepage": "https://github.com/tylim88/Crypto-Price-Predictor-Back-End#readme",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"got": "^9.6.0",
+		"node-binance-api": "^0.9.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.4.3",
+		"@babel/core": "^7.4.3",
+		"@babel/node": "^7.2.2",
+		"@babel/preset-env": "^7.4.3",
+		"babel-eslint": "^10.0.1",
+		"env-cmd": "^8.0.2",
+		"eslint": "^5.16.0",
+		"eslint-config-prettier": "^4.1.0",
+		"eslint-plugin-prettier": "^3.0.1",
+		"husky": "^1.3.1",
+		"nodemon": "^1.18.10",
+		"prettier": "^1.16.4",
+		"pretty-quick": "^1.10.0"
+	},
+	"babel": {
+		"presets": [
+			"@babel/preset-env"
+		]
+	},
+	"prettier": {
+		"eslintIntegration": true,
+		"singleQuote": true,
+		"jsxSingleQuote": true,
+		"trailingComma": "es5",
+		"semi": false,
+		"jsxBracketSameLine": true,
+		"useTabs": true
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged"
+		}
+	},
+	"eslintConfig": {
+		"parser": "babel-eslint",
+		"env": {
+			"es6": true,
+			"node": true
+		},
+		"parserOptions": {
+			"ecmaVersion": 6,
+			"sourceType": "module"
+		},
+		"extends": [
+			"eslint:recommended",
+			"prettier"
+		]
+	}
 }
