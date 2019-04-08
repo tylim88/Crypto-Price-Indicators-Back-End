@@ -15,18 +15,13 @@ const data = {
 }
 app.use(cors())
 
-const server = app.listen(3000, () =>
+const server = app.listen(3001, () =>
 	// eslint-disable-next-line no-console
-	console.log('app listening on port 3000!')
+	console.log('app listening on port 3001!')
 )
 
 const io = socket(server)
 
-app.get('/', (req, res) => {
-	binance.prevDay(false, (error, prevDay) => {
-		res.send(JSON.stringify(prevDay))
-	})
-})
 binance.websockets.prevDay(false, (error, res) => {
 	const markets = res.symbol.substring(3)
 	if (markets.lastIndexOf('BTC') !== -1) {
