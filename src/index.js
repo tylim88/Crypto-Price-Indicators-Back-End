@@ -2,6 +2,7 @@ import express from 'express'
 import Binance from 'node-binance-api'
 import socket from 'socket.io'
 import cors from 'cors'
+import compression from 'compression'
 
 const app = express()
 const binance = Binance()
@@ -14,10 +15,13 @@ const data = {
 	},
 }
 app.use(cors())
+app.use(compression())
 
-const server = app.listen(3001, () =>
+app.use(express.static('public'))
+
+const server = app.listen(process.env.PORT, () =>
 	// eslint-disable-next-line no-console
-	console.log('app listening on port 3001!')
+	console.log(`app listening on port ${process.env.PORT}!`)
 )
 
 const io = socket(server)
@@ -83,4 +87,4 @@ binance.websockets.prevDay(false, (error, res) => {
 
 setInterval(() => {
 	io.emit('data', data)
-}, 1000)
+}, 500)

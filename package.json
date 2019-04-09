@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon --exec babel-node src/index.js",
+		"start": "npm run build && env-cmd ./.config/prod.env node dist/index.js",
+		"dev": "env-cmd ./.config/dev.env nodemon --exec babel-node src/index.js",
 		"build": "babel src --out-dir dist --copy-files",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
@@ -19,6 +20,7 @@
 	},
 	"homepage": "https://github.com/tylim88/Crypto-Price-Predictor-Back-End#readme",
 	"dependencies": {
+		"compression": "^1.7.4",
 		"cors": "^2.8.5",
 		"express": "^4.16.4",
 		"got": "^9.6.0",

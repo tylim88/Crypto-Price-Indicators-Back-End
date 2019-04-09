@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# environment
+/.config
+
 # dependencies
 /node_modules
 /.pnp
@@ -11,6 +14,7 @@ exp.js
 
 # production
 /build
+/public
 
 # misc
 .DS_Store
