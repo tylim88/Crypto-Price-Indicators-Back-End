@@ -9,7 +9,7 @@ const data = {
 	binance: {
 		bnb_markets: {},
 		btc_markets: {},
-		eth_markets: {},
+		alts_markets: {},
 		usd_markets: {},
 	},
 }
@@ -23,18 +23,64 @@ const server = app.listen(3001, () =>
 const io = socket(server)
 
 binance.websockets.prevDay(false, (error, res) => {
-	const markets = res.symbol.substring(3)
-	if (markets.lastIndexOf('BTC') !== -1) {
+	const markets = res.symbol
+	if (markets.endsWith('BTC')) {
 		data.binance.btc_markets[res.symbol] = res
-	} else if (markets.lastIndexOf('BNB') !== -1) {
+		data.binance.btc_markets[res.symbol].symbol = res.symbol.replace(
+			'BTC',
+			'/BTC'
+		)
+	} else if (markets.endsWith('BNB')) {
 		data.binance.bnb_markets[res.symbol] = res
-	} else if (markets.lastIndexOf('ETH') !== -1) {
-		data.binance.eth_markets[res.symbol] = res
-	} else {
+		data.binance.bnb_markets[res.symbol].symbol = res.symbol.replace(
+			'BNB',
+			'/BNB'
+		)
+	} else if (markets.endsWith('ETH')) {
+		data.binance.alts_markets[res.symbol] = res
+		data.binance.alts_markets[res.symbol].symbol = res.symbol.replace(
+			'ETH',
+			'/ETH'
+		)
+	} else if (markets.endsWith('XRP')) {
+		data.binance.alts_markets[res.symbol] = res
+		data.binance.alts_markets[res.symbol].symbol = res.symbol.replace(
+			'XRP',
+			'/XRP'
+		)
+	} else if (markets.endsWith('USDT')) {
 		data.binance.usd_markets[res.symbol] = res
-	}
+		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
+			'USDT',
+			'/USDT'
+		)
+	} else if (markets.endsWith('TUSD')) {
+		data.binance.usd_markets[res.symbol] = res
+		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
+			'TUSD',
+			'/TUSD'
+		)
+	} else if (markets.endsWith('USDC')) {
+		data.binance.usd_markets[res.symbol] = res
+		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
+			'USDC',
+			'/USDC'
+		)
+	} else if (markets.endsWith('USDS')) {
+		data.binance.usd_markets[res.symbol] = res
+		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
+			'USDS',
+			'/USDS'
+		)
+	} else if (markets.endsWith('PAX')) {
+		data.binance.usd_markets[res.symbol] = res
+		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
+			'PAX',
+			'/PAX'
+		)
+	} else data.binance.usd_markets[res.symbol] = res
 })
 
 setInterval(() => {
 	io.emit('data', data)
-}, 5000)
+}, 1000)
