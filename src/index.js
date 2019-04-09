@@ -3,6 +3,7 @@ import Binance from 'node-binance-api'
 import socket from 'socket.io'
 import cors from 'cors'
 import compression from 'compression'
+import helmet from 'helmet'
 
 const app = express()
 const binance = Binance()
@@ -16,7 +17,7 @@ const data = {
 }
 app.use(cors())
 app.use(compression())
-
+app.use(helmet())
 app.use(express.static('public'))
 
 const server = app.listen(process.env.PORT, () =>
