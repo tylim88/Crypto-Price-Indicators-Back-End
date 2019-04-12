@@ -28,64 +28,30 @@ const server = app.listen(process.env.PORT, () =>
 const io = socket(server)
 
 binance.websockets.prevDay(false, (error, res) => {
-	const markets = res.symbol
-	if (markets.endsWith('BTC')) {
-		data.binance.btc_markets[res.symbol] = res
-		data.binance.btc_markets[res.symbol].symbol = res.symbol.replace(
-			'BTC',
-			'/BTC'
-		)
-	} else if (markets.endsWith('BNB')) {
-		data.binance.bnb_markets[res.symbol] = res
-		data.binance.bnb_markets[res.symbol].symbol = res.symbol.replace(
-			'BNB',
-			'/BNB'
-		)
-	} else if (markets.endsWith('ETH')) {
-		data.binance.alts_markets[res.symbol] = res
-		data.binance.alts_markets[res.symbol].symbol = res.symbol.replace(
-			'ETH',
-			'/ETH'
-		)
-	} else if (markets.endsWith('XRP')) {
-		data.binance.alts_markets[res.symbol] = res
-		data.binance.alts_markets[res.symbol].symbol = res.symbol.replace(
-			'XRP',
-			'/XRP'
-		)
-	} else if (markets.endsWith('USDT')) {
+	const pair = res.symbol
+
+	const markets = [
+		{ unit: ['BTC'], market: 'btc' },
+		{ unit: ['BNB'], market: 'bnb' },
+		{ unit: ['ETH', 'XRP'], market: 'alts' },
+		{ unit: ['USDT', 'TUSD', 'USDC', 'USDS', 'PAX'], market: 'usd' },
+	]
+
+	const found = markets.some(element => {
+		const unit = element.unit.find(unit => pair.endsWith(unit))
+		if (unit) {
+			data.binance[element.market + '_markets'][res.symbol] = res
+			data.binance[element.market + '_markets'][
+				res.symbol
+			].symbol = res.symbol.replace(unit, '/' + unit)
+			return true
+		}
+	})
+	if (!found) {
 		data.binance.usd_markets[res.symbol] = res
-		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
-			'USDT',
-			'/USDT'
-		)
-	} else if (markets.endsWith('TUSD')) {
-		data.binance.usd_markets[res.symbol] = res
-		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
-			'TUSD',
-			'/TUSD'
-		)
-	} else if (markets.endsWith('USDC')) {
-		data.binance.usd_markets[res.symbol] = res
-		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
-			'USDC',
-			'/USDC'
-		)
-	} else if (markets.endsWith('USDS')) {
-		data.binance.usd_markets[res.symbol] = res
-		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
-			'USDS',
-			'/USDS'
-		)
-	} else if (markets.endsWith('PAX')) {
-		data.binance.usd_markets[res.symbol] = res
-		data.binance.usd_markets[res.symbol].symbol = res.symbol.replace(
-			'PAX',
-			'/PAX'
-		)
-	} else data.binance.usd_markets[res.symbol] = res
+	}
 })
 
 setInterval(() => {
 	io.emit('data', data)
-}, 500)
+}, 1500)
