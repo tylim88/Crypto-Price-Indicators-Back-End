@@ -4,7 +4,6 @@ import socket from 'socket.io'
 import cors from 'cors'
 import compression from 'compression'
 import helmet from 'helmet'
-import knex from 'knex'
 
 const app = express()
 const binance = Binance()
@@ -16,6 +15,8 @@ const data = {
 		usd_markets: {},
 	},
 }
+const candleStream = {}
+
 app.use(cors())
 app.use(compression())
 app.use(helmet())
@@ -28,20 +29,8 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = socket(server)
 
-const db = knex({
-	client: 'pg',
-	connection: {
-		host: '127.0.0.1',
-		port: 5432,
-		database: 'postgres',
-		user: 'postgres',
-		password: process.env.PASSWORD,
-	},
-})
-
 binance.websockets.prevDay(false, (error, res) => {
 	const pair = res.symbol
-	let dataPoint = {}
 	const markets = [
 		{ unit: ['BTC'], market: 'btc' },
 		{ unit: ['BNB'], market: 'bnb' },
@@ -56,39 +45,15 @@ binance.websockets.prevDay(false, (error, res) => {
 			data.binance[element.market + '_markets'][
 				res.symbol
 			].symbol = res.symbol.replace(unit, '/' + unit)
-			dataPoint = data.binance[element.market + '_markets'][pair]
-
 			return true
 		}
 	})
 	if (!found) {
 		data.binance.usd_markets[res.symbol] = res
-		dataPoint = res
 	}
-	db('binance_data')
-		.select('data')
-		.where({ pair })
-		.then(res => {
-			console.log(res)
-			if (res.length) {
-				db('binance_data')
-					.where({ pair })
-					.update({ data: JSON.stringify([dataPoint]) })
-					.catch(err => {
-						console.log(err)
-					})
-			} else {
-				db('binance_data')
-					.insert({ pair, dataPoint: JSON.stringify([dataPoint]) })
-					.catch(err => {
-						console.log(err)
-					})
-			}
-		})
-		.catch(err => {
-			console.log(err)
-		})
 })
+
+io.on('connection', function(socket) {})
 
 setInterval(() => {
 	io.emit('data', data)
