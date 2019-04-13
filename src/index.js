@@ -15,7 +15,23 @@ const data = {
 		usd_markets: {},
 	},
 }
-const candleStream = {}
+const binanceChartPeriod = [
+	'1m',
+	'3m',
+	'5m',
+	'15m',
+	'30m',
+	'1h',
+	'2h',
+	'4h',
+	'6h',
+	'8h',
+	'12h',
+	'1d',
+	'3d',
+	'1w',
+	'1M',
+]
 
 app.use(cors())
 app.use(compression())
@@ -53,8 +69,28 @@ binance.websockets.prevDay(false, (error, res) => {
 	}
 })
 
-io.on('connection', function(socket) {})
-
 setInterval(() => {
 	io.emit('data', data)
 }, 1500)
+
+binance.prevDay(false, (error, prevDay) => {
+	for (let obj of prevDay) {
+		const { symbol } = obj
+		binanceChartPeriod.forEach(period => {
+			const roomName = `${symbol}@${period}`
+			const binance = Binance()
+			const room = io.sockets.in(roomName)
+			room.on('join', function() {
+				if (room.clients.length === 1) {
+					console.log('Someone joined the room.')
+				}
+			})
+			room.on('leave', function() {
+				if (room.clients.length) {
+					binance.websockets.terminate(roomName)
+					console.log('Someone left the room.')
+				}
+			})
+		})
+	}
+})
