@@ -15,28 +15,6 @@ const data = {
 		usd_markets: {},
 	},
 }
-const binanceChartPeriod = [
-	'1m',
-	'3m',
-	'5m',
-	'15m',
-	'30m',
-	'1h',
-	'2h',
-	'4h',
-	'6h',
-	'8h',
-	'12h',
-	'1d',
-	'3d',
-	'1w',
-	'1M',
-]
-
-app.use(cors())
-app.use(compression())
-app.use(helmet())
-app.use(express.static('public'))
 
 const server = app.listen(process.env.PORT, () =>
 	// eslint-disable-next-line no-console
@@ -45,7 +23,17 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = socket(server)
 
-binance.websockets.prevDay(false, (error, res) => {
+app.use(cors())
+app.use(compression())
+app.use(helmet())
+app.use(express.static('public'))
+
+binance.websockets.prevDay(false, (err, res) => {
+	if (err) {
+		// eslint-disable-next-line no-console
+		console.log(err)
+		return
+	}
 	const pair = res.symbol
 	const markets = [
 		{ unit: ['BTC'], market: 'btc' },
@@ -73,24 +61,43 @@ setInterval(() => {
 	io.emit('data', data)
 }, 1500)
 
-binance.prevDay(false, (error, prevDay) => {
-	for (let obj of prevDay) {
-		const { symbol } = obj
-		binanceChartPeriod.forEach(period => {
-			const roomName = `${symbol}@${period}`
-			const binance = Binance()
-			const room = io.sockets.in(roomName)
-			room.on('join', function() {
-				if (room.clients.length === 1) {
-					console.log('Someone joined the room.')
+io.on('connect', socket => {
+	socket.on('room', roomInfo => {
+		const { join, pair, period } = roomInfo
+		const roomName = `${pair}@${period}`
+		const rooms = io.sockets.adapter.rooms
+		if (join) {
+			socket.join(roomName, err => {
+				if (err) {
+					// eslint-disable-next-line no-console
+					console.log(err)
+					return
+				}
+				if (rooms[roomName].length === 1) {
+					binance.websockets.chart(pair, period, (symbol, interval, chart) => {
+						if (rooms[roomName]) {
+							io.to(roomName).emit(roomName, chart)
+						} else {
+							const endPoint = `${pair}@kline_${period}`.toLowerCase()
+							binance.websockets.terminate(endPoint)
+						}
+					})
 				}
 			})
-			room.on('leave', function() {
-				if (room.clients.length) {
-					binance.websockets.terminate(roomName)
-					console.log('Someone left the room.')
+			// console.log(socket.id, 'joined', roomName)
+		} else {
+			socket.leave(roomName, err => {
+				if (err) {
+					// eslint-disable-next-line no-console
+					console.log(err)
+					return
+				}
+				if (rooms[roomName]) {
+					const endPoint = `${pair}@kline_${period}`
+					binance.websockets.terminate(endPoint)
 				}
 			})
-		})
-	}
+			// console.log(socket.id, 'left', roomName)
+		}
+	})
 })
